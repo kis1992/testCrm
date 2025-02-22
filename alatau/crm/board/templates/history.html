@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История переписки</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+           <!-- Фиксированное меню сверху -->
+    <div class="fixed top-0 left-0 right-0 bg-white border-b border-gray-300 p-4 z-10">
+        <div class="max-w-xl w-full mx-auto flex items-center justify-between">
+            <button 
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring focus:ring-gray-300 flex items-center"
+                onclick="location.href='/'"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Назад
+            </button>
+            <button 
+                class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300"
+            >
+                Стоп
+            </button>
+            <button 
+                class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring focus:ring-yellow-300"
+            >
+                Выжимка
+            </button>
+            <button 
+                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            >
+                Запланировать
+            </button>
+            <button 
+                class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300"
+            >
+                Поделиться
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-xl w-full bg-white rounded-lg shadow-md p-6  mx-auto mt-20">
+        {% for message in data %}
+            <div class="mb-4">
+                <div 
+                    class="flex {% if message.role == 'user' %} justify-end {% else %} justify-start {% endif %} items-end"
+                >
+                    <div 
+                        class="max-w-[75%] p-4 rounded-lg text-sm 
+                        {% if message.role == 'user' %} bg-green-100 text-gray-800 {% else %} bg-gray-100 text-gray-800 border border-gray-300 {% endif %}"
+                        style="word-break: break-word;"
+                    >
+                        {{ message.content }}
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 mt-1 {% if message.role == 'user' %} text-right {% endif %}">
+                
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <!-- Форма для отправки сообщения -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 p-4">
+        <div class="max-w-xl w-full mx-auto flex items-center gap-2">
+            <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="Введите сообщение..." 
+                class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+            >
+            <button 
+                id="sendMessageButton" 
+                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            >
+                Отправить
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('sendMessageButton').addEventListener('click', async () => {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+
+            if (!message) return;
+
+            try {
+                const response = await fetch('/message_add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: 12345, // Замените на нужный chat_id или динамически передавайте
+                        text: message
+                    })
+                });
+
+                if (response.ok) {
+                    messageInput.value = ''; // Очистить поле ввода после успешной отправки
+                } else {
+                    console.error('Ошибка при отправке сообщения', response.statusText);
+                }
+            } catch (error) {
+                console.error('Ошибка при выполнении запроса', error);
+            }
+        });
+    </script>
+</body>
+</html>

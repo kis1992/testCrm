@@ -1,0 +1,11 @@
+*.log
+*.pot
+*.pyc
+__pycache__/
+.idea/
+db.sqlite3
+/static
+.DS_Store
+*~
+local_settings.py
+settings.py
